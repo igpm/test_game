@@ -1,0 +1,15 @@
+
+body {
+	height: 100vh;
+}
+
+#wrapper {
+	position: relative;
+	width: 400px;
+	height: 400px;
+	margin: 0 auto;
+	top: 50%;
+	transform: translateY(-50%);
+	border: 1px solid black;
+}
+
