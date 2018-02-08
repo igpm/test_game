@@ -6,7 +6,7 @@ import step_processing
 import cgitb
 #cgitb.enable()
 
-def run():
+def main():
     in_data = json.loads(sys.stdin.readline())
     out_data = step_processing.run(in_data)
     print("Content-Type: application/json")
@@ -14,4 +14,4 @@ def run():
     print()
     print(json.JSONEncoder().encode(out_data))
 
-run()
+main()

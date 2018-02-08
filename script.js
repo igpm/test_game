@@ -60,6 +60,7 @@ function serverAction(firstElementPos) {
 			var secondElementPos = [];
 			secondElementPos[0] = respData.x;
 			secondElementPos[1] = respData.y;
+			var gameState = respData.state;
 			console.log(secondElementPos);
 			gameArea.setComponent(secondElementPos, './images/Zero.png');
 		}

@@ -23,11 +23,11 @@ class GameState():
     
     def update_board(self, x, y, s):
         self.current_board[GAME_BOARD][x][y] = s
+        self.current_board[TRY_COUNT] += 1
     
 
-    def check_tries(self):
+    def check_state(self):
         if self.current_board[TRY_COUNT] != 7:
-            self.current_board[TRY_COUNT] += 1
             return True
         else:
             filename = os.path.join(os.path.dirname(__file__), 'temp_data.dat')
@@ -50,14 +50,15 @@ class GameState():
             pickle.dump(self.current_board, fl)
 
 
-def run(in_coords):
+def run(gdata):
 #    sys.stdin = open('/dev/tty')
 #    pdb.set_trace()
     g = GameState()
-    g.update_board(in_coords['x'], in_coords['y'], 'x')
-    out_coords = g.get_coords()
-    g.update_board(out_coords['x'], out_coords['y'], 'o')
+    g.update_board(gdata['x'], gdata['y'], 'x')
+    gdata = g.get_coords()
+    g.update_board(gdata['x'], gdata['y'], 'o')
     g.save_changes()
-    return out_coords
+    gdata['state'] = 'continue'
+    return gdata
 
 
