@@ -59,6 +59,7 @@ def run(gdata):
     if state == 'TIE':
         gdata['state'] = 'tie'
         return gdata
+
     gdata = g.get_coords()
     g.update_board(gdata['x'], gdata['y'], 'o')
     g.save_changes()
