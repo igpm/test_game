@@ -1,0 +1,3 @@
+*.pyc
+cgi-bin/t.dat
+cgi-bin/__pycache__
