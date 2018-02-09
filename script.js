@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 });
 
 var gameArea = {
+	boardElements: [[false, false, false],[false, false, false],[false, false, false]],
 	setBoard: function() {
 		var backgroundImg = new Image();
 		backgroundImg.src = './images/Background.png';
@@ -17,6 +18,7 @@ var gameArea = {
 		}
 	},
 	setComponent: function(eCoords, img) {
+		this.boardElements[eCoords[0]][eCoords[1]] = true;
 		var coords = [];
 		if (eCoords[0] == 0 && eCoords[1] == 0) { coords[0] = 0; coords[1] = 0;}
 		else if (eCoords[0] == 0 && eCoords[1] == 1) { coords[0] = 0; coords[1] = 134; }
@@ -33,7 +35,10 @@ var gameArea = {
 		elementImg.onload = function() {
 			canvasCtx.drawImage(elementImg, coords[0], coords[1]);
 		}
-	}	
+	},
+	handleTieResult: function() {
+		canvasElement.removeEventListener('click', clickHandler);
+	}
 };
 
 function clickHandler(event) {
@@ -48,9 +53,11 @@ function clickHandler(event) {
 	else if (event.offsetY >= 267 && event.offsetY <= 400) elementPos[1] = 2;
 	else elementPos[1] = -1;
 	
+	if (gameArea.boardElements[elementPos[0]][elementPos[1]]) return;
 	gameArea.setComponent(elementPos,'./images/Cross.png');
 	serverAction(elementPos);
 }
+
 
 function serverAction(firstElementPos) {
 	var httpRequest = new XMLHttpRequest();
@@ -62,6 +69,10 @@ function serverAction(firstElementPos) {
 			secondElementPos[1] = respData.y;
 			var gameState = respData.state;
 			console.log(secondElementPos);
+			if (gameState == 'tie') {
+				gameArea.handleTieResult();
+				return;
+			}
 			gameArea.setComponent(secondElementPos, './images/Zero.png');
 		}
 	}

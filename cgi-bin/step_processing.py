@@ -27,7 +27,7 @@ class GameState():
     
 
     def check_state(self):
-        if self.current_board[TRY_COUNT] == 8:
+        if self.current_board[TRY_COUNT] == 9:
             filename = os.path.join(os.path.dirname(__file__), 'temp_data.dat')
             with open(filename,'w'):pass
             return 'TIE'
@@ -55,13 +55,17 @@ def run(gdata):
 #    pdb.set_trace()
     g = GameState()
     g.update_board(gdata['x'], gdata['y'], 'x')
-    state = check_state()
+    state = g.check_state()
     if state == 'TIE':
         gdata['state'] = 'tie'
         return gdata
 
     gdata = g.get_coords()
     g.update_board(gdata['x'], gdata['y'], 'o')
+    state = g.check_state()
+    if state == 'TIE':
+        gdata['state'] = 'tie'
+        return gdata
     g.save_changes()
     gdata['state'] = 'continue'
     return gdata
