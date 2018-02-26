@@ -36,8 +36,13 @@ var gameArea = {
 			canvasCtx.drawImage(elementImg, coords[0], coords[1]);
 		}
 	},
-	handleTieResult: function() {
+	handleResult: function() {
 		canvasElement.removeEventListener('click', clickHandler);
+		var newGameButton = document.createElement('button');
+		var newGameButtonSign = document.createTextNode('Start New Game');
+		newGameButton.appendChild(newGameButtonSign);
+		var newGameNode = document.getElementById('new_game');
+		newGameNode.appendChild(newGameButton);
 	}
 };
 
@@ -70,7 +75,7 @@ function serverAction(firstElementPos) {
 			var gameState = respData.state;
 			console.log(secondElementPos);
 			if (gameState == 'tie') {
-				gameArea.handleTieResult();
+				gameArea.handleResult();
 				return;
 			}
 			gameArea.setComponent(secondElementPos, './images/Zero.png');

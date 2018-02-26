@@ -3,13 +3,27 @@ body {
 	height: 100vh;
 }
 
-#wrapper {
+#gameboard_wrapper {
 	position: relative;
-	width: 400px;
-	height: 400px;
+	display: block;
 	margin: 0 auto;
+	width: 500px;
+	height: 600px;
 	top: 50%;
 	transform: translateY(-50%);
 	border: 1px solid black;
+}
+#canvas {
+	position: relative;
+	display: block;
+	margin: 0 auto;
+	margin-top: 10%;
+}
+#new_game {
+	margin-top: 10%;
+}
+#new_game button {
+	display: block;
+	margin: 0 auto;
 }
 
