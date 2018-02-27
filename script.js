@@ -9,8 +9,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
 });
 
 var gameArea = {
-	boardElements: [[false, false, false],[false, false, false],[false, false, false]],
+	boardElements: [],
 	setBoard: function() {
+		this.boardElements = [[false, false, false],[false, false, false],[false, false, false]];
 		var backgroundImg = new Image();
 		backgroundImg.src = './images/Background.png';
 		backgroundImg.onload = function() {
@@ -43,6 +44,11 @@ var gameArea = {
 		newGameButton.appendChild(newGameButtonSign);
 		var newGameNode = document.getElementById('new_game');
 		newGameNode.appendChild(newGameButton);
+		newGameButton.addEventListener('click',function() {
+			canvasElement.addEventListener('click', clickHandler);
+			gameArea.setBoard();
+			newGameNode.removeChild(newGameButton);
+		});
 	}
 };
 
