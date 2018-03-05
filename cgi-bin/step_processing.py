@@ -13,9 +13,9 @@ class GameState():
 
     def __init__(self):
         self.current_board = []
+        self.filename = os.path.join(os.path.dirname(__file__), 'temp_data.dat')
         try:
-            filename = os.path.join(os.path.dirname(__file__), 'temp_data.dat')
-            with open(filename, 'rb') as fl:
+            with open(self.filename, 'rb') as fl:
                 self.current_board = pickle.load(fl)
         except EOFError:
                 self.current_board = [[[None, None, None], [None, None, None], [None, None, None]],0]
@@ -26,13 +26,15 @@ class GameState():
         self.current_board[TRY_COUNT] += 1
     
 
-    def check_state(self):
+    def check_state(self ,e):
         if self.current_board[TRY_COUNT] == 9:
-            filename = os.path.join(os.path.dirname(__file__), 'temp_data.dat')
-            with open(filename,'w'):pass
-            return 'TIE'
+            with open(self.filename,'w'):pass
+            return{'state':'tie', 'element':None, 'x':None, 'y':None}
+        elif self.current_board[GAME_BOARD][0][0] == e and self.current_board[GAME_BOARD][0][1] == e and self.current_board[GAME_BOARD][0][2] == e:
+            with open(self.filename,'w'):pass
+            return{'state':'win', 'element':e, 'x':0, 'y':0}
         else:
-            return False
+            return{'state':'continue', 'element':None, 'x':None, 'y':None}
 
     def get_coords(self):
         cell_coords = []
@@ -45,29 +47,24 @@ class GameState():
 
 
     def save_changes(self):
-        filename = os.path.join(os.path.dirname(__file__), 'temp_data.dat')
-        with open(filename, 'wb') as fl:
+        with open(self.filename, 'wb') as fl:
             pickle.dump(self.current_board, fl)
 
 
-def run(gdata):
+def run(in_gdata):
 #    sys.stdin = open('/dev/tty')
 #    pdb.set_trace()
     g = GameState()
-    g.update_board(gdata['x'], gdata['y'], 'x')
-    state = g.check_state()
-    if state == 'TIE':
-        gdata['state'] = 'tie'
-        return gdata
-
-    gdata = g.get_coords()
-    g.update_board(gdata['x'], gdata['y'], 'o')
-    state = g.check_state()
-    if state == 'TIE':
-        gdata['state'] = 'tie'
-        return gdata
+    for item in ('x', 'o'):
+        if item is 'o':
+            in_gdata = g.get_coords()
+        g.update_board(in_gdata['x'], in_gdata['y'], item)
+        out_gdata = g.check_state(item)
+        if out_gdata['state'] == 'tie' or out_gdata['state'] == 'win':
+            return out_gdata
     g.save_changes()
-    gdata['state'] = 'continue'
-    return gdata
+    out_gdata['x'] = in_gdata['x']
+    out_gdata['y'] = in_gdata['y']
+    return out_gdata
 
 

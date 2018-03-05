@@ -2,10 +2,17 @@
 var canvasElement, canvasCtx;
 
 document.addEventListener("DOMContentLoaded", function(event) {
-	canvasElement = document.getElementById('canvas'),
-	canvasCtx = canvasElement.getContext('2d')
-	gameArea.setBoard();
-	canvasElement.addEventListener('click', clickHandler);
+	var httpStartRequest = new XMLHttpRequest();
+	httpStartRequest.onreadystatechange = function() {
+		if(this.readyState == 4 && this.status == 200) {
+			canvasElement = document.getElementById('canvas'),
+			canvasCtx = canvasElement.getContext('2d')
+			gameArea.setBoard();
+			canvasElement.addEventListener('click', clickHandler);
+		}
+	}
+	httpStartRequest.open('GET','/cgi-bin/reset_count.py',true);
+	httpStartRequest.send();
 });
 
 var gameArea = {
@@ -79,8 +86,8 @@ function serverAction(firstElementPos) {
 			secondElementPos[0] = respData.x;
 			secondElementPos[1] = respData.y;
 			var gameState = respData.state;
-			console.log(secondElementPos);
-			if (gameState == 'tie') {
+			console.log(respData);
+			if (gameState == 'tie' || gameState == 'win') {
 				gameArea.handleResult();
 				return;
 			}
@@ -89,6 +96,5 @@ function serverAction(firstElementPos) {
 	}
 	httpRequest.open('POST','/cgi-bin/cgi_script.py',true);
 	httpRequest.setRequestHeader('Content-Type', 'application/json');
-	httpRequest.setRequestHeader('Cache-Control', 'no-cache');
 	httpRequest.send(JSON.stringify({'x': firstElementPos[0], 'y': firstElementPos[1]}) + '\n');
 }
