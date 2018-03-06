@@ -28,13 +28,23 @@ class GameState():
 
     def check_state(self ,e):
         if self.current_board[TRY_COUNT] == 9:
-            with open(self.filename,'w'):pass
-            return{'state':'tie', 'element':None, 'x':None, 'y':None}
-        elif self.current_board[GAME_BOARD][0][0] == e and self.current_board[GAME_BOARD][0][1] == e and self.current_board[GAME_BOARD][0][2] == e:
-            with open(self.filename,'w'):pass
-            return{'state':'win', 'element':e, 'x':0, 'y':0}
-        else:
-            return{'state':'continue', 'element':None, 'x':None, 'y':None}
+            return{'state':'tie', 'element':None, 'direction':None, 'number':None}
+        for x_item in range(0, 3):
+            if self.current_board[GAME_BOARD][0][x_item] == e and self.current_board[GAME_BOARD][1][x_item] == e and \
+                   self.current_board[GAME_BOARD][2][x_item] == e:
+                return{'state':'win', 'element':e, 'direction': 'horizontal', 'number':x_item}
+        for y_item in range(0, 3):
+            if self.current_board[GAME_BOARD][y_item][0] == e and self.current_board[GAME_BOARD][y_item][1] == e and \
+                   self.current_board[GAME_BOARD][y_item][2] == e:
+                return{'state':'win', 'element':e, 'direction': 'vertical', 'number':y_item}
+        if self.current_board[GAME_BOARD][0][0] == e and self.current_board[GAME_BOARD][1][1] == e and \
+              self.current_board[GAME_BOARD][2][2] == e:
+            return{'state':'win', 'element':e, 'direction': 'diagonal', 'number':0}
+        if self.current_board[GAME_BOARD][2][0] == e and self.current_board[GAME_BOARD][1][1] == e and \
+              self.current_board[GAME_BOARD][0][2] == e:
+            return{'state':'win', 'element':e, 'direction': 'diagonal', 'number':1}
+        return {'state':'continue', 'element':None, 'direction':None, 'number':None}
+
 
     def get_coords(self):
         cell_coords = []
@@ -61,6 +71,9 @@ def run(in_gdata):
         g.update_board(in_gdata['x'], in_gdata['y'], item)
         out_gdata = g.check_state(item)
         if out_gdata['state'] == 'tie' or out_gdata['state'] == 'win':
+            out_gdata['x'] = in_gdata['x']
+            out_gdata['y'] = in_gdata['y']
+            with open(g.filename,'w'):pass
             return out_gdata
     g.save_changes()
     out_gdata['x'] = in_gdata['x']

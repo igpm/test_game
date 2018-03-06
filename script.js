@@ -43,19 +43,6 @@ var gameArea = {
 		elementImg.onload = function() {
 			canvasCtx.drawImage(elementImg, coords[0], coords[1]);
 		}
-	},
-	handleResult: function() {
-		canvasElement.removeEventListener('click', clickHandler);
-		var newGameButton = document.createElement('button');
-		var newGameButtonSign = document.createTextNode('Start New Game');
-		newGameButton.appendChild(newGameButtonSign);
-		var newGameNode = document.getElementById('new_game');
-		newGameNode.appendChild(newGameButton);
-		newGameButton.addEventListener('click',function() {
-			canvasElement.addEventListener('click', clickHandler);
-			gameArea.setBoard();
-			newGameNode.removeChild(newGameButton);
-		});
 	}
 };
 
@@ -76,22 +63,59 @@ function clickHandler(event) {
 	serverAction(elementPos);
 }
 
+function handleResult() {
+	canvasElement.removeEventListener('click', clickHandler);
+	var newGameButton = document.createElement('button');
+	var newGameButtonSign = document.createTextNode('Start New Game');
+	newGameButton.appendChild(newGameButtonSign);
+	var newGameNode = document.getElementById('new_game');
+	newGameNode.appendChild(newGameButton);
+	newGameButton.addEventListener('click',function() {
+		canvasElement.addEventListener('click', clickHandler);
+		gameArea.setBoard();
+		newGameNode.removeChild(newGameButton);
+	});
+}
+
+function handleAction(rData) {
+	console.log(rData);
+	var secondElementPos = [];
+	secondElementPos[0] = rData.x;
+	secondElementPos[1] = rData.y;
+	if (rData.state === 'tie') {
+		handleResult();
+			return;
+	}
+	if (rData.state === 'win') {
+		if (rData.element === 'o') {
+			gameArea.setComponent(secondElementPos, './images/Zero.png');
+		}
+		if (rData.direction === 'vertical') {
+			if (rData.number === 0) gameArea.setComponent([0, 0], './images/Line1.png');
+			if (rData.number === 1) gameArea.setComponent([0, 0], './images/Line2.png');
+			if (rData.number === 2) gameArea.setComponent([0, 0], './images/Line3.png');
+		}
+		if (rData.direction === 'horizontal') {
+			if (rData.number === 0) gameArea.setComponent([0, 0], './images/Line4.png');
+			if (rData.number === 1) gameArea.setComponent([0, 0], './images/Line5.png');
+			if (rData.number === 2) gameArea.setComponent([0, 0], './images/Line6.png');
+		}
+		if (rData.direction === 'diagonal') {
+			if (rData.number === 0) gameArea.setComponent([0, 0], './images/Line7.png');
+			if (rData.number === 1) gameArea.setComponent([0, 0], './images/Line8.png');
+		}
+		handleResult();
+		return;
+	}
+	gameArea.setComponent(secondElementPos, './images/Zero.png');
+}
 
 function serverAction(firstElementPos) {
 	var httpRequest = new XMLHttpRequest();
 	httpRequest.onreadystatechange = function() {
 		if(this.readyState == 4 && this.status == 200) {
 			var respData = JSON.parse(httpRequest.responseText);
-			var secondElementPos = [];
-			secondElementPos[0] = respData.x;
-			secondElementPos[1] = respData.y;
-			var gameState = respData.state;
-			console.log(respData);
-			if (gameState == 'tie' || gameState == 'win') {
-				gameArea.handleResult();
-				return;
-			}
-			gameArea.setComponent(secondElementPos, './images/Zero.png');
+			handleAction(respData);
 		}
 	}
 	httpRequest.open('POST','/cgi-bin/cgi_script.py',true);
